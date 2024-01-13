@@ -39,13 +39,14 @@ public class Main {
         }
     }
 
-    public static String[] extendBooksArrayOnAddition() {
+    public static String[][] extendBooksArrayOnAddition() {
         String[][] newBooks = new String[books.length + 1][4];
         for (int i = 0; i < books.length; i++) {
             for (int j = 0; j < 4; j++) {
+                newBooks[i][j] = books[i][j];
             }
         }
-        return extendBooksArrayOnAddition();
+        return newBooks;
     }
 
 
@@ -60,7 +61,6 @@ public class Main {
 
     public static void generateBookRecommendations(String tc) {
         String bookISBN = null;
-
         for (int i = 0; i < transactionsQuantity; i++) {
             if (transactions[i][0].equals(tc) && transactions[i][1] != null) {
                 bookISBN = transactions[i][1];
@@ -96,7 +96,7 @@ public class Main {
         }
     }
 
-    
+
     public static void checkOutBook(String fullName, String tc, String eMail, String password, String bookISBN) {
         if (patronQuantity > INDEX) {
             String[][] newPatrons = new String[patrons.length + 1][4];
@@ -144,10 +144,6 @@ public class Main {
             } else {
                 System.out.println("Kitap bulunmamaktadır.");
             }
-
-
-
-
         } else {
             patrons[patronQuantity][0] = fullName;
             patrons[patronQuantity][1] = tc;
@@ -215,7 +211,13 @@ public class Main {
                books[i]=books[i+1];
            }
            bookQuantity--;
-           truncateBooksArrayOnDeletion();
+           String[][] newBooks=new String[books.length][4];
+           for (int i=0; i<books.length; i++){
+               for (int j=0; j<books[i].length; j++){
+                   newBooks[i][j]=books[i][j];
+               }
+           }
+           books=newBooks;
            System.out.println("Kitap Silinmiştir.");
        }
        else {
@@ -223,14 +225,14 @@ public class Main {
 
        }
    }
-   public static void truncateBooksArrayOnDeletion(){
+   public static String[][] truncateBooksArrayOnDeletion(){
        String[][] newBooks=new String[books.length][4];
        for (int i=0; i<books.length; i++){
            for (int j=0; j<books[i].length; j++){
                newBooks[i][j]=books[i][j];
            }
        }
-       books=newBooks;
+       return newBooks;
    }
 
     public static void updateBook(String ISBN) {
@@ -303,36 +305,42 @@ public class Main {
             }
         }
     }
-    public static void patronsBookView(String tc){
-        int index=-1;
-        for (int i=0; i<patrons.length; i++){
-            if (patrons[i][1].equals(tc)){
-                index=i;
+    
+    public static void patronsBookView(String tc) {
+        int patronIndex = -1;
+        int transactionIndex = -1;
+
+        for (int i = 0; i < patronQuantity; i++) {
+            if (patrons[i][1].equals(tc)) {
+                patronIndex = i;
                 break;
             }
-        }
-        int patronsIndex=-1;
-        for (int i=0; i<transactions.length; i++){
-            if (transactions[i][0].equals(tc)){
-                patronsIndex=i;
-                break;
-            }
-        }
-        if (index!=-1){
-            System.out.printf("%-20s %-20s %-20s %-20s%n", "Kullanıcı İsmi", "Kullanıcı TC","Password", "Email");
-            System.out.printf("%-20s %-20s %-20s %-20s%n",patrons[index][0],patrons[index][1],patrons[index][3],patrons[index][2]);
-            if (patronsIndex!=-1){
-                System.out.printf("%-20s %-20s %-20s%n", "Kullanıcı TC", "Kitap ISBN","Tarih");
-                System.out.printf("%-20s %-20s %-20s%n",transactions[patronsIndex][0],transactions[patronsIndex][1],transactions[patronsIndex][2]);
-            }
-            else {
-                System.out.println("Kullanıcının kitabı bulunmamaktadır.");
-            }
-        }else {
-            System.out.println("Kullanıcı bulunmamaktadır.");
         }
 
+        for (int i = 0; i < transactions.length; i++) {
+            if (transactions[i][0] != null && transactions[i][0].equals(tc)) {
+                transactionIndex = i;
+                break;
+            }
+        }
+
+        if (patronIndex != -1) {
+            System.out.printf("%-20s %-20s %-20s %-20s%n", "Kullanıcı İsmi", "Kullanıcı TC", "Password", "Email");
+            System.out.printf("%-20s %-20s %-20s %-20s%n", patrons[patronIndex][0], patrons[patronIndex][1], patrons[patronIndex][3], patrons[patronIndex][2]);
+
+            if (transactionIndex != -1) {
+                System.out.printf("%n%-20s %-20s %-20s%n", "Kullanıcı TC", "Kitap ISBN", "Tarih");
+                System.out.printf("%-20s %-20s %-20s%n", transactions[transactionIndex][0], transactions[transactionIndex][1], transactions[transactionIndex][2]);
+            } else {
+                System.out.println("Kullanıcının kitabı bulunmamaktadır.");
+            }
+        } else {
+            System.out.println("Belirtilen TC'ye sahip kullanıcı bulunamadı.");
+        }
     }
+
+
+
 
     public static void searchBooks(String keyWord){
         boolean bookFind=false;
@@ -348,10 +356,11 @@ public class Main {
                         ", ISBN: " + books[i][3]);
                         bookFind=true;
             }
+        }
             if (!bookFind){
                 System.out.println("Kitap bulunmamaktadır.");
             }
-        }
+
         }
     }
 
@@ -395,16 +404,6 @@ public class Main {
                         System.out.println();
                         break;
                     case 2:
-                       /* System.out.println("Almak istediğiniz kitabın ISBN kodunu giriniz.");
-                        String isbn1 = scanner.nextLine();
-                        System.out.println("Kullanıcı Ad Soyad giriniz(orn:Mustafa Çetin)");
-                        String names = scanner.nextLine();
-                        System.out.println("Kullanıcı ID giriniz.");
-                        String patronId = scanner.nextLine();
-                        checkOutBook(isbn1, names, patronId);*/
-
-
-
                         System.out.println("Kullanıcı Ad Soyad giriniz(orn:Mustafa Çetin)");
                         String fullName = scanner.nextLine();
                         System.out.println("Kullanıcı TC giriniz(orn:12345678910)");
@@ -418,15 +417,15 @@ public class Main {
                         checkOutBook(fullName,TC,email,password,bookISBN);
                         break;
                     case 3:
-                        System.out.println();
+                       /* System.out.println();
                         System.out.println("İade istedipiniz kitabın ISBN kodunu giriniz.");
                         String isbn3 = scanner.nextLine();
                         System.out.println("Kullanıcı ismini giriniz.");
                         String patron1 = scanner.nextLine();
                         System.out.println("İade kitap sayısı.");
                         int iadeKitap = scanner.nextInt();
-                        //returnBook();
-                        System.out.println();
+                        returnBook();
+                        System.out.println();*/
                         break;
                     case 4:
                         viewAvailableBooks();
@@ -438,7 +437,6 @@ public class Main {
                         searchBooks(key);
                         System.out.println();
                         break;
-
                     case 6:
                         System.out.println("Lütfen silmek istediğiniz kitabın ISBN kodunu giriniz.");
                         String isbn4 = scanner.nextLine();
@@ -471,12 +469,12 @@ public class Main {
                         System.exit(0);
                         break;
                     default:
-                        System.out.println("Geçersiz işlem...");
+                        System.out.println("Lütfen bir seçenek girin: ");
                         break;
                 }
             }
             catch (InputMismatchException e){
-                System.out.println("Lütfen rakam ile cevap giriniz.");
+                System.out.println("Lütfen bir seçenek girin: ");
                 scanner.nextLine();
             }
         }
